@@ -1,15 +1,41 @@
+/*
+ * RequireJS Version Plugin
+ * Guy Bedford 2013
+ * MIT
+ */
+/*
+ * Supports any semver ranges for module loading
+ * loading multiple versions of a module only when absolutely necessary
+ * 
+ * Usage:
+ *  require '#!jquery ~1.8'
+ *  require '#!cs!csmodule >=2.0 <5'
+ *
+ * Setup:
+ *  jquery.js (provides version list):
+ *  define(function() { 
+ *    return ['1.8.0', '1.8.1'];
+ *  });
+ *
+ *  Implementations then provided with convention:
+ *  jquery-1.8.0.js
+ *  jquery-1.8.1.js
+ * 
+ *  Must be a semver format x.x.x.
+ * 
+ */
 define(['./semver', 'require'], function(semver, req) {
   return {
     loadedVersions: {},
     getVersionNum: function(name, build, callback) {
-      var hashIndex = name.lastIndexOf('#');      
+      var hashIndex = name.indexOf(' ');      
       var moduleName = name.substr(0, hashIndex);
       var versionRange = name.substr(hashIndex + 1);
 
       var loadedVersions = this.loadedVersions;
 
       if (!semver.validRange(versionRange))
-        throw moduleName + '#' + versionRange + ' has an invalid version range.';
+        throw moduleName + ' ' + versionRange + ' has an invalid version range.';
 
       var checkVersions = function(supportedVersions) {
         // first check if we have any loaded versions for this module
