@@ -37,6 +37,8 @@ define(['./semver', 'require'], function(semver, req) {
       if (!semver.validRange(versionRange))
         throw moduleName + ' ' + versionRange + ' has an invalid version range.';
 
+      var moduleShortname = moduleName.split('/').shift();
+
       var checkVersions = function(supportedVersions) {
         // first check if we have any loaded versions for this module
         if (loadedVersions[moduleName])
@@ -56,15 +58,15 @@ define(['./semver', 'require'], function(semver, req) {
           + '  var define = function(factory){ \n'
           + '    defined = factory(); \n'
           + '  } \n'
-          + fs.readFileSync(req.toUrl(moduleName) + '.js') + '\n'
+          + fs.readFileSync(req.toUrl(moduleShortName) + '.js') + '\n'
           + '  return defined; \n'
           + '})()'
         ));
       }
       else {
         // load the version ranges for the given moduleName
-        req([moduleName], checkVersions, function(err) {
-          throw 'You need to provide a "' + moduleName + '" module providing the version array.';
+        req([moduleShortName], checkVersions, function(err) {
+          throw 'You need to provide a "' + moduleShortName + '" module providing the version array.';
         });
       }
     },
