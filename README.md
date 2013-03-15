@@ -3,6 +3,7 @@ RequireJS Version Plugin
 
 * Supports any semver ranges for module loading (`~1.8`, `=1.8.1`, `>=0.5 < 2.0.5`).
 * Loads multiple versions of a module only when absolutely necessary.
+* Optimizer support building only the minimum necessary versions for use.
 
 ### Usage
 ```javascript
