@@ -15,12 +15,12 @@ RequireJS Version Plugin
 
 ### Setup
 
-To allow versioning for a module `moduleName`, provide a version listing file at `moduleName.js`, and then
+To allow versioning for a module `moduleName`, provide a version listing file at `moduleName.versions.js`, and then
 individual implementations of versions at `moduleName-x.x.x.js`.
 
 For example, to provide jQuery versions:
 
-jquery.js:
+jquery.versions.js:
 ```javascript
   define(function() { 
     return ['1.8.0', '1.8.1'];
