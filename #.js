@@ -12,7 +12,7 @@
  *  require '#!cs!csmodule >=2.0 <5'
  *
  * Setup:
- *  jquery.js (provides version list):
+ *  jquery.versions.js (provides version list):
  *  define(function() { 
  *    return ['1.8.0', '1.8.1'];
  *  });
@@ -65,8 +65,8 @@ define(['./semver', 'require'], function(semver, req) {
       }
       else {
         // load the version ranges for the given moduleName
-        req([moduleShortName], checkVersions, function(err) {
-          throw 'You need to provide a "' + moduleShortName + '" module providing the version array.';
+        req([moduleShortName + '.versions'], checkVersions, function(err) {
+          throw 'You need to provide a "' + moduleShortName + '.versions.js" module providing the version array.';
         });
       }
     },
