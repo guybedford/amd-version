@@ -8,8 +8,8 @@
  * loading multiple versions of a module only when absolutely necessary
  * 
  * Usage:
- *  require '#!jquery ~1.8'
- *  require '#!cs!csmodule >=2.0 <5'
+ *  require '@!jquery ~1.8'
+ *  require '@!cs!csmodule >=2.0 <5'
  *
  * Setup:
  *  jquery.versions.js (provides version list):
