@@ -372,7 +372,7 @@ define(['require'], function(req) {
       }
       else {
         // load the version ranges for the given moduleName
-        req([moduleShortName + '.versions'], checkVersions, function(err) {
+        req([moduleName + '.versions'], checkVersions, function(err) {
           throw 'You need to provide a "' + moduleShortName + '.versions.js" module providing the version array.';
         });
       }
