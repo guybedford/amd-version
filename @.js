@@ -25,8 +25,8 @@
  * 
  */
 define(['require'], function(req) {
-  var semver;
-  (function (exports, root) { // nothing in here is node-specific.
+  var semver = {};
+  (function (exports) { // nothing in here is node-specific.
     // See http://semver.org/
     // This implementation is a *hair* less strict in that it allows
     // v1.2.3 things, and also tags that don't begin with a char.
