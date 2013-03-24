@@ -337,14 +337,14 @@ define(['require'], function(req) {
     getVersionNum: function(name, build, callback) {
       var shortname = name.split('/').shift();
       var afterpath = name.substr(shortname.length);
-      var hashIndex = shortname.indexOf(' ');      
+      var hashIndex = shortname.indexOf('#');      
       var moduleName = shortname.substr(0, hashIndex);
       var versionRange = shortname.substr(hashIndex + 1);
 
       var loadedVersions = this.loadedVersions;
 
       if (!semver.validRange(versionRange))
-        throw moduleName + ' ' + versionRange + ' has an invalid version range.';
+        throw moduleName + '#' + versionRange + ' has an invalid version range.';
 
       var checkVersions = function(supportedVersions) {
         // first check if we have any loaded versions for this module
@@ -354,7 +354,8 @@ define(['require'], function(req) {
               return callback(moduleName, v);
 
         // no supported loaded version - need to load a version
-        callback(moduleName, semver.maxSatisfying(supportedVersions, versionRange), afterpath);
+        var useVersion = semver.maxSatisfying(supportedVersions, versionRange);
+        callback(moduleName, supportedVersions[supportedVersions.length - 1] == useVersion ? 'latest' : useVersion, afterpath);
       }
 
       if (build) {
@@ -381,7 +382,7 @@ define(['require'], function(req) {
       var loadedVersions = this.loadedVersions;
       this.getVersionNum(name, config.isBuild, function(moduleName, version, afterpath) {
         // load from the expected filename convention
-        req([moduleName + '-' + version + afterpath], function(m) {
+        req([moduleName + (version == 'latest' ? '' : '-' + version) + afterpath], function(m) {
           loadedVersions[moduleName] = loadedVersions[moduleName] || {};
           loadedVersions[moduleName][version] = true;
           load(m);
