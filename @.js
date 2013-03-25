@@ -382,7 +382,7 @@ define(['require'], function(req) {
       var loadedVersions = this.loadedVersions;
       this.getVersionNum(name, config.isBuild, function(moduleName, version, afterpath) {
         // load from the expected filename convention
-        req([moduleName + (version == 'latest' ? '' : '-' + version) + afterpath], function(m) {
+        require([moduleName + (version == 'latest' ? '' : '-' + version) + afterpath], function(m) {
           loadedVersions[moduleName] = loadedVersions[moduleName] || {};
           loadedVersions[moduleName][version] = true;
           load(m);
