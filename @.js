@@ -370,7 +370,7 @@ define(['require'], function(req) {
         // report that we're branching versions
         if (haveVersion) {
           if (self.onVersionConflict)
-            self.onVersionConflict(baseName + subPath, versionRange, haveVersion, useVersion);
+            useVersion = self.onVersionConflict(baseName + subPath, versionRange, haveVersion, useVersion) || useVersion;
         }
 
         callback(moduleName, useVersion, supportedVersions[supportedVersions.length - 1] == useVersion);
