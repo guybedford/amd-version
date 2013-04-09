@@ -351,15 +351,28 @@ define(['require'], function(req) {
       if (!semver.validRange(versionRange))
         throw moduleName + '#' + versionRange + ' has an invalid version range.';
 
+      var self = this;
+
       var checkVersions = function(supportedVersions) {
         // first check if we have any loaded versions for this module
-        if (loadedVersions[moduleName])
-          for (var v in loadedVersions[moduleName])
+        var haveVersion = false;
+        if (loadedVersions[moduleName]) {
+          for (var v in loadedVersions[moduleName]) {
+            haveVersion = v;
             if (semver.satisfies(v, versionRange))
               return callback(moduleName, v);
+          }
+        }
 
         // no supported loaded version - need to load a version
         var useVersion = semver.maxSatisfying(supportedVersions, versionRange);
+
+        // report that we're branching versions
+        if (haveVersion) {
+          if (self.onVersionConflict)
+            self.onVersionConflict(baseName + subPath, versionRange, haveVersion, useVersion);
+        }
+
         callback(moduleName, supportedVersions[supportedVersions.length - 1] == useVersion ? '' : useVersion);
       }
 
