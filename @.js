@@ -8,8 +8,8 @@
  * loading multiple versions of a module only when absolutely necessary
  * 
  * Usage:
- *  require '@!jquery ~1.8'
- *  require '@!cs!csmodule >=2.0 <5'
+ *  require '@!jquery#~1.8'
+ *  require '@!cs!csmodule#>=2.0 <5'
  *
  * Setup:
  *  jquery.versions.js (provides version list):
@@ -334,12 +334,17 @@ define(['require'], function(req) {
 
   return {
     loadedVersions: {},
-    getVersionNum: function(name, build, callback) {
-      var shortname = name.split('/').shift();
-      var afterpath = name.substr(shortname.length);
-      var hashIndex = shortname.indexOf('#');      
-      var moduleName = shortname.substr(0, hashIndex);
-      var versionRange = shortname.substr(hashIndex + 1);
+    getVersion: function(name, build, callback) {
+
+      // some/plugin!my-module/sub/path#=0.0.1
+      // [pluginPrefix][baseName][subPath]#[versionRange]
+      parts = name.match(/(.*!)?([^\/]*)([^#]*)#(.*)/);
+
+      var pluginPrefix = parts[1] || '';
+      var baseName = parts[2];
+      var subPath = parts[3];
+      var versionRange = parts[4];
+      var moduleName = pluginPrefix + baseName + subPath;
 
       var loadedVersions = this.loadedVersions;
 
@@ -355,7 +360,7 @@ define(['require'], function(req) {
 
         // no supported loaded version - need to load a version
         var useVersion = semver.maxSatisfying(supportedVersions, versionRange);
-        callback(moduleName, supportedVersions[supportedVersions.length - 1] == useVersion ? 'latest' : useVersion, afterpath);
+        callback(moduleName, supportedVersions[supportedVersions.length - 1] == useVersion ? '' : useVersion);
       }
 
       if (build) {
@@ -366,7 +371,7 @@ define(['require'], function(req) {
           + '  var define = function(factory){ \n'
           + '    defined = factory(); \n'
           + '  } \n'
-          + fs.readFileSync(req.toUrl(moduleShortName) + '.js') + '\n'
+          + fs.readFileSync(req.toUrl(moduleName + (pluginPrefix ? '.' + pluginPrefix.replace(/!/g, '') : '') + '.versions.js')) + '\n'
           + '  return defined; \n'
           + '})()'
         ));
@@ -374,15 +379,15 @@ define(['require'], function(req) {
       else {
         // load the version ranges for the given moduleName
         req([moduleName + '.versions'], checkVersions, function(err) {
-          throw 'You need to provide a "' + moduleShortName + '.versions.js" module providing the version array.';
+          throw 'You need to provide a "' + moduleName + (pluginPrefix ? '.' + pluginPrefix.replace(/!/g, '') : '') + '.versions.js" module providing the version array.';
         });
       }
     },
     load: function(name, req, load, config) {
       var loadedVersions = this.loadedVersions;
-      this.getVersionNum(name, config.isBuild, function(moduleName, version, afterpath) {
+      this.getVersion(name, config.isBuild, function(moduleName, version) {
         // load from the expected filename convention
-        require([moduleName + (version == 'latest' ? '' : '-' + version) + afterpath], function(m) {
+        require([moduleName + (version ? '-' + version : '')], function(m) {
           loadedVersions[moduleName] = loadedVersions[moduleName] || {};
           loadedVersions[moduleName][version] = true;
           load(m);
@@ -390,7 +395,7 @@ define(['require'], function(req) {
       });
     },
     write: function(pluginName, name, write) {
-      this.getVersionNum(name, true, function(moduleName, version) {
+      this.getVersion(name, true, function(moduleName, version) {
         write.asModule(pluginName + '!' + name, "define(['" + moduleName + '-' + version + "'], function(m){ return m; });")
       });
     }
