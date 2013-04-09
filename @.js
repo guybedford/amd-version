@@ -360,7 +360,7 @@ define(['require'], function(req) {
           for (var v in loadedVersions[moduleName]) {
             haveVersion = v;
             if (semver.satisfies(v, versionRange))
-              return callback(moduleName, v);
+              return callback(moduleName, v, supportedVersions[supportedVersions.length - 1] == v);
           }
         }
 
@@ -373,7 +373,7 @@ define(['require'], function(req) {
             self.onVersionConflict(baseName + subPath, versionRange, haveVersion, useVersion);
         }
 
-        callback(moduleName, supportedVersions[supportedVersions.length - 1] == useVersion ? '' : useVersion);
+        callback(moduleName, useVersion, supportedVersions[supportedVersions.length - 1] == useVersion);
       }
 
       if (build) {
@@ -398,9 +398,9 @@ define(['require'], function(req) {
     },
     load: function(name, req, load, config) {
       var loadedVersions = this.loadedVersions;
-      this.getVersion(name, config.isBuild, function(moduleName, version) {
+      this.getVersion(name, config.isBuild, function(moduleName, version, master) {
         // load from the expected filename convention
-        require([moduleName + (version ? '-' + version : '')], function(m) {
+        require([moduleName + (master ? '' : '-' + version)], function(m) {
           loadedVersions[moduleName] = loadedVersions[moduleName] || {};
           loadedVersions[moduleName][version] = true;
           load(m);
@@ -408,7 +408,7 @@ define(['require'], function(req) {
       });
     },
     write: function(pluginName, name, write) {
-      this.getVersion(name, true, function(moduleName, version) {
+      this.getVersion(name, true, function(moduleName, version, master) {
         write.asModule(pluginName + '!' + name, "define(['" + moduleName + '-' + version + "'], function(m){ return m; });")
       });
     }

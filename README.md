@@ -8,8 +8,8 @@ RequireJS Version Plugin
 ### Usage
 ```javascript
   define(function(require) {
-    var jquery = require('#!jquery ~1.8');
-    var csmodule = require('#!cs!csmodule >=2.0 <5');
+    var jquery = require('@!jquery#~1.8');
+    var csmodule = require('@!cs!csmodule#>=2.0 <5');
   });
 ```
 
