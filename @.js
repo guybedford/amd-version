@@ -398,9 +398,12 @@ define(['require'], function(req) {
     },
     load: function(name, req, load, config) {
       var loadedVersions = this.loadedVersions;
+      var self = this;
       this.getVersion(name, config.isBuild, function(moduleName, version, master) {
         // load from the expected filename convention
         require([moduleName + (master ? '' : '-' + version)], function(m) {
+          if (self.onLoad)
+            self.onLoad(moduleName, version, master);
           loadedVersions[moduleName] = loadedVersions[moduleName] || {};
           loadedVersions[moduleName][version] = true;
           load(m);
