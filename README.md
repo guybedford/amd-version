@@ -1,6 +1,8 @@
 RequireJS Version Plugin
 ===
 
+**No longer maintained or advised... Use version suffixes in your code, semver ranges are generally a bad idea.**
+
 * Supports any semver ranges for module loading (`~1.8`, `=1.8.1`, `>=0.5 < 2.0.5`).
 * Loads multiple versions of a module only when absolutely necessary.
 * Optimizer support building only the minimum necessary versions for use.
