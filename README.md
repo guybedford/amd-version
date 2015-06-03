@@ -1,8 +1,6 @@
 RequireJS Version Plugin
 ===
 
-[test](@.js)
-
 **No longer maintained or advised... Use version suffixes in your code, semver ranges are generally a bad idea.**
 
 * Supports any semver ranges for module loading (`~1.8`, `=1.8.1`, `>=0.5 < 2.0.5`).
